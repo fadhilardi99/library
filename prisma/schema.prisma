@@ -10,64 +10,99 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  clerkId   String   @unique
-  email     String   @unique
-  name      String
-  role      Role     @default(MAHASISWA)
-  nim       String?  // Untuk mahasiswa
-  nip       String?  // Untuk dosen
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              String   @id @default(cuid())
+  clerkId         String   @unique
+  email           String   @unique
+  firstName       String
+  lastName        String
+  role            UserRole @default(MAHASISWA)
+  studentId       String?  @unique
+  nim             String?  @unique
+  department      String?
+  isActive        Boolean  @default(true)
+  profileImage    String?
+  phone           String?
+  address         String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   // Relations
-  loans     Loan[]
-  favorites Favorite[]
+  loans           Loan[]
+  favorites       Favorite[]
+  reviews         Review[]
+  notifications   Notification[]
+  loanRequests    LoanRequest[]
 
   @@map("users")
 }
 
 model Book {
-  id          String   @id @default(cuid())
-  title       String
-  author      String
-  publisher   String
-  year        Int
-  isbn        String?  @unique
-  category    String
-  description String?
-  coverUrl    String?
-  stock       Int      @default(1)
-  totalStock  Int      @default(1)
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String   @id @default(cuid())
+  title         String
+  author        String
+  publisher     String
+  publishedYear Int
+  isbn          String?  @unique
+  category      Category
+  description   String?
+  coverImage    String?
+  totalCopies   Int      @default(1)
+  availableCopies Int    @default(1)
+  location      String?
+  language      String   @default("id")
+  pages         Int?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   // Relations
-  loans     Loan[]
-  favorites Favorite[]
+  loans         Loan[]
+  favorites     Favorite[]
+  reviews       Review[]
+  loanRequests  LoanRequest[]
 
   @@map("books")
 }
 
 model Loan {
-  id         String     @id @default(cuid())
-  userId     String
-  bookId     String
-  loanDate   DateTime   @default(now())
-  dueDate    DateTime
-  returnDate DateTime?
-  status     LoanStatus @default(PENDING)
-  notes      String?
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
+  id            String     @id @default(cuid())
+  userId        String
+  bookId        String
+  borrowedAt    DateTime   @default(now())
+  dueDate       DateTime
+  returnedAt    DateTime?
+  status        LoanStatus @default(ACTIVE)
+  renewalCount  Int        @default(0)
+  fine          Decimal?   @default(0)
+  notes         String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
 
   // Relations
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  user          User       @relation(fields: [userId], references: [id])
+  book          Book       @relation(fields: [bookId], references: [id])
 
   @@map("loans")
+}
+
+model LoanRequest {
+  id          String            @id @default(cuid())
+  userId      String
+  bookId      String
+  requestDate DateTime          @default(now())
+  status      LoanRequestStatus @default(PENDING)
+  notes       String?
+  adminNotes  String?
+  approvedAt  DateTime?
+  rejectedAt  DateTime?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  // Relations
+  user        User              @relation(fields: [userId], references: [id])
+  book        Book              @relation(fields: [bookId], references: [id])
+
+  @@map("loan_requests")
 }
 
 model Favorite {
@@ -77,25 +112,104 @@ model Favorite {
   createdAt DateTime @default(now())
 
   // Relations
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id])
+  book      Book     @relation(fields: [bookId], references: [id])
 
-  // Unique constraint
   @@unique([userId, bookId])
   @@map("favorites")
 }
 
-enum Role {
+model Review {
+  id        String   @id @default(cuid())
+  userId    String
+  bookId    String
+  rating    Int      // 1-5
+  comment   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user      User     @relation(fields: [userId], references: [id])
+  book      Book     @relation(fields: [bookId], references: [id])
+
+  @@unique([userId, bookId])
+  @@map("reviews")
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  type      NotificationType
+  isRead    Boolean          @default(false)
+  data      Json?
+  createdAt DateTime         @default(now())
+
+  // Relations
+  user      User             @relation(fields: [userId], references: [id])
+
+  @@map("notifications")
+}
+
+model SystemSettings {
+  id                    String @id @default(cuid())
+  maxLoanDays          Int    @default(14)
+  maxRenewalCount      Int    @default(2)
+  maxLoanPerUser       Int    @default(5)
+  finePerDay           Decimal @default(1000)
+  reminderDaysBefore   Int    @default(3)
+  updatedAt            DateTime @updatedAt
+
+  @@map("system_settings")
+}
+
+// Enums
+enum UserRole {
   ADMIN
-  DOSEN
   MAHASISWA
+  DOSEN
+}
+
+enum Category {
+  TEKNOLOGI
+  BISNIS
+  SASTRA
+  SEJARAH
+  SAINS
+  MATEMATIKA
+  EKONOMI
+  HUKUM
+  PSIKOLOGI
+  FILSAFAT
+  AGAMA
+  SENI
+  OLAHRAGA
+  KESEHATAN
+  PENDIDIKAN
+  LAINNYA
 }
 
 enum LoanStatus {
-  PENDING     // Menunggu approval
-  APPROVED    // Disetujui, belum diambil
-  BORROWED    // Sedang dipinjam
-  RETURNED    // Sudah dikembalikan
-  REJECTED    // Ditolak
-  OVERDUE     // Terlambat
+  ACTIVE
+  RETURNED
+  OVERDUE
+  LOST
+}
+
+enum LoanRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum NotificationType {
+  LOAN_APPROVED
+  LOAN_REJECTED
+  LOAN_DUE_SOON
+  LOAN_OVERDUE
+  LOAN_RETURNED
+  BOOK_AVAILABLE
+  SYSTEM_ANNOUNCEMENT
 }

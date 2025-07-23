@@ -91,7 +91,8 @@ export function maskIdentity(identity: string, type: "nim" | "nip") {
   }
 }
 
-export function getInitials(name: string) {
+export function getInitials(name?: string) {
+  if (!name || typeof name !== "string" || !name.trim()) return "?";
   return name
     .split(" ")
     .map((n) => n[0])

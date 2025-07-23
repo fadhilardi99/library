@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
+import SyncUser from "@/components/SyncUser";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -36,6 +37,7 @@ export default function RootLayout({
     >
       <html lang="id">
         <body className={inter.className}>
+          <SyncUser />
           <div className="min-h-screen bg-gray-50">{children}</div>
           <Toaster />
         </body>
