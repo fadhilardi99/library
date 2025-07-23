@@ -1,52 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Perpustakaan Digital - Next.js App
 
-## Getting Started
+A modern library management system built with Next.js, Prisma, Clerk authentication, and a fully redesigned admin dashboard.
 
-First, run the development server:
+## 🚀 Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Role-based Dashboard:**
+  - Admin, Dosen, Mahasiswa, each with their own sidebar and dashboard.
+- **Manajemen Buku:** CRUD, import/export (CSV, Excel, JSON), preview before import.
+- **Manajemen User:** Ubah role, status aktif, search, filter, delete.
+- **Peminjaman & Pengembalian:** Approve/reject, admin notes, return marking, notifications.
+- **Statistik & Laporan:** Card grid, monthly/yearly reports, favorite book highlight.
+- **Pengaturan Sistem:** Batas peminjaman, denda, reminder, dsb.
+- **Modern UI:**
+  - Redesigned sidebar, navbar, dashboard, and all admin pages.
+  - Responsive, clean, and accessible.
+- **Notifikasi:**
+  - Bell icon with dropdown, badge for unread notifications.
+- **Toast Notifications:**
+  - Success/error feedback for all actions.
+- **Validation:**
+  - All forms and import/export have validation and error handling.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Getting Started
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Authentication with Clerk
-
-This project uses [Clerk](https://clerk.com/) for authentication (login and register).
-
-### Setup
-
-1. Install dependencies:
+1. **Install dependencies:**
    ```bash
-   npm install @clerk/clerk-react @clerk/nextjs
+   npm install
+   # or
+   yarn install
    ```
-2. Add your Clerk frontend API key to your environment variables as `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`.
-3. Wrap your app with `ClerkProvider` in `src/app/layout.tsx` (already done).
-4. Use `<SignInButton />` and `<SignUpButton />` for login and register (already added to the home page).
+2. **Setup environment:**
+   - Add your Clerk API key as `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` in `.env.local`.
+   - Setup your database and update `prisma/schema.prisma` as needed.
+3. **Run the development server:**
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   ```
+4. **Open** [http://localhost:3000](http://localhost:3000) in your browser.
 
-See [Clerk Docs](https://clerk.com/docs) for more details.
+## 🔑 Authentication
 
-## Learn More
+- Uses [Clerk](https://clerk.com/) for authentication and user management.
+- See Clerk docs for setup and environment variables.
 
-To learn more about Next.js, take a look at the following resources:
+## 📦 Import/Export Buku
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Import/export book data in CSV, Excel, or JSON format.
+- Preview data before import.
+- Validation and error feedback included.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📊 Statistik & Laporan
 
-## Deploy on Vercel
+- Dashboard cards for total books, loans, active users, and favorite book.
+- Monthly/yearly reports with filters.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🖥️ Modern UI/UX
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Sidebar and navbar with role-based menus and user info.
+- Notification dropdown with badge.
+- Consistent color, spacing, and responsive design.
+
+## 📚 Tech Stack
+
+- Next.js App Router
+- Prisma ORM
+- Clerk Auth
+- Tailwind CSS
+- React Hooks
+
+## 📄 License
+
+MIT
