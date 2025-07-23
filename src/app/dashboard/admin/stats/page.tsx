@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { BookOpen, Users, BarChart3, Star } from "lucide-react";
 
 interface Stats {
   totalBooks: number;
@@ -12,6 +13,30 @@ interface Stats {
     _count: { loans: number };
   } | null;
 }
+
+const statCards = [
+  {
+    key: "totalBooks",
+    label: "Total Buku",
+    icon: <BookOpen size={32} className="text-blue-500" />,
+    color: "bg-blue-50",
+    text: "text-blue-700",
+  },
+  {
+    key: "totalLoans",
+    label: "Total Peminjaman",
+    icon: <BarChart3 size={32} className="text-green-500" />,
+    color: "bg-green-50",
+    text: "text-green-700",
+  },
+  {
+    key: "totalActiveUsers",
+    label: "Pengguna Aktif",
+    icon: <Users size={32} className="text-purple-500" />,
+    color: "bg-purple-50",
+    text: "text-purple-700",
+  },
+];
 
 export default function AdminStatsPage() {
   const [stats, setStats] = useState<Stats | null>(null);
@@ -34,43 +59,44 @@ export default function AdminStatsPage() {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">
+      <h1 className="text-3xl font-bold text-blue-900 mb-8">
         Statistik Perpustakaan
       </h1>
       {error && <div className="mb-4 text-red-600">{error}</div>}
       {loading ? (
         <div>Loading...</div>
       ) : stats ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow p-6 flex flex-col items-center justify-center">
-            <span className="text-gray-500 text-sm mb-2">Total Buku</span>
-            <span className="text-2xl font-bold text-blue-700">
-              {stats.totalBooks}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+          {statCards.map((card) => (
+            <div
+              key={card.key}
+              className={`rounded-2xl shadow-md p-6 flex flex-col items-center justify-center ${card.color}`}
+            >
+              {card.icon}
+              <span className="text-lg font-semibold text-gray-700 mt-2 mb-1">
+                {card.label}
+              </span>
+              <span className={`text-3xl font-bold ${card.text}`}>
+                {Number.isFinite(stats[card.key as keyof Stats])
+                  ? Number(stats[card.key as keyof Stats])
+                  : "-"}
+              </span>
+            </div>
+          ))}
+          <div className="rounded-2xl shadow-md p-6 flex flex-col items-center justify-center bg-yellow-50">
+            <Star size={32} className="text-yellow-500" />
+            <span className="text-lg font-semibold text-gray-700 mt-2 mb-1">
+              Buku Favorit
             </span>
-          </div>
-          <div className="bg-white rounded-lg shadow p-6 flex flex-col items-center justify-center">
-            <span className="text-gray-500 text-sm mb-2">Total Peminjaman</span>
-            <span className="text-2xl font-bold text-blue-700">
-              {stats.totalLoans}
-            </span>
-          </div>
-          <div className="bg-white rounded-lg shadow p-6 flex flex-col items-center justify-center">
-            <span className="text-gray-500 text-sm mb-2">Pengguna Aktif</span>
-            <span className="text-2xl font-bold text-blue-700">
-              {stats.totalActiveUsers}
-            </span>
-          </div>
-          <div className="bg-white rounded-lg shadow p-6 flex flex-col items-center justify-center">
-            <span className="text-gray-500 text-sm mb-2">Buku Favorit</span>
             {stats.favoriteBook ? (
               <>
-                <span className="text-lg font-semibold text-gray-900 text-center">
+                <span className="text-base font-bold text-yellow-700 text-center">
                   {stats.favoriteBook.title}
                 </span>
                 <span className="text-xs text-gray-500 mb-1">
                   oleh {stats.favoriteBook.author}
                 </span>
-                <span className="text-xs text-blue-700">
+                <span className="text-xs text-yellow-700">
                   {stats.favoriteBook._count.loans}x dipinjam
                 </span>
               </>

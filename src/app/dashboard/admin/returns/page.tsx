@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { Undo2, StickyNote } from "lucide-react";
 
 interface Loan {
   id: string;
@@ -82,84 +83,79 @@ export default function ReturnsPage() {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">
-        Pengembalian Buku
-      </h1>
+      <div className="flex items-center gap-3 mb-8">
+        <Undo2 size={32} className="text-blue-600" />
+        <h1 className="text-2xl font-bold text-blue-900">Pengembalian Buku</h1>
+      </div>
       {error && <div className="mb-4 text-red-600">{error}</div>}
-      {loading ? (
-        <div>Loading...</div>
-      ) : loans.length === 0 ? (
-        <div>Tidak ada peminjaman aktif.</div>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white border border-gray-200 rounded-lg">
-            <thead>
-              <tr>
-                <th className="px-4 py-2 border-b text-gray-900 font-semibold">
-                  Nama Peminjam
-                </th>
-                <th className="px-4 py-2 border-b text-gray-900 font-semibold">
-                  Email
-                </th>
-                <th className="px-4 py-2 border-b text-gray-900 font-semibold">
-                  Judul Buku
-                </th>
-                <th className="px-4 py-2 border-b text-gray-900 font-semibold">
-                  Penulis
-                </th>
-                <th className="px-4 py-2 border-b text-gray-900 font-semibold">
-                  Tanggal Pinjam
-                </th>
-                <th className="px-4 py-2 border-b text-gray-900 font-semibold">
-                  Batas Kembali
-                </th>
-                <th className="px-4 py-2 border-b text-gray-900 font-semibold">
-                  Aksi
-                </th>
+      <div className="overflow-x-auto rounded-2xl shadow bg-white">
+        <table className="min-w-full text-sm">
+          <thead>
+            <tr className="bg-blue-50">
+              <th className="px-4 py-3 text-left font-semibold text-gray-700 rounded-tl-2xl">
+                Nama Peminjam
+              </th>
+              <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                Email
+              </th>
+              <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                Judul Buku
+              </th>
+              <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                Penulis
+              </th>
+              <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                Tanggal Pinjam
+              </th>
+              <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                Batas Kembali
+              </th>
+              <th className="px-4 py-3 text-left font-semibold text-gray-700 rounded-tr-2xl">
+                Aksi
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {loans.map((loan, i) => (
+              <tr
+                key={loan.id}
+                className={
+                  i % 2 === 0
+                    ? "bg-white"
+                    : "bg-gray-50 hover:bg-blue-50 transition"
+                }
+              >
+                <td className="px-4 py-3 text-gray-900 font-medium">
+                  {loan.user.firstName} {loan.user.lastName}
+                </td>
+                <td className="px-4 py-3 text-gray-700">{loan.user.email}</td>
+                <td className="px-4 py-3 text-gray-700">{loan.book.title}</td>
+                <td className="px-4 py-3 text-gray-700">{loan.book.author}</td>
+                <td className="px-4 py-3 text-gray-700">
+                  {new Date(loan.borrowedAt).toLocaleDateString()}
+                </td>
+                <td className="px-4 py-3 text-gray-700">
+                  {new Date(loan.dueDate).toLocaleDateString()}
+                </td>
+                <td className="px-4 py-3 flex gap-2 items-center">
+                  <button
+                    onClick={() => handleReturn(loan.id)}
+                    className="flex items-center gap-1 bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700 shadow"
+                  >
+                    <Undo2 size={16} /> Tandai Dikembalikan
+                  </button>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {loans.map((loan) => (
-                <tr key={loan.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-2 border-b text-gray-800">
-                    {loan.user.firstName} {loan.user.lastName}
-                  </td>
-                  <td className="px-4 py-2 border-b text-gray-800">
-                    {loan.user.email}
-                  </td>
-                  <td className="px-4 py-2 border-b text-gray-800">
-                    {loan.book.title}
-                  </td>
-                  <td className="px-4 py-2 border-b text-gray-800">
-                    {loan.book.author}
-                  </td>
-                  <td className="px-4 py-2 border-b text-gray-800">
-                    {new Date(loan.borrowedAt).toLocaleDateString()}
-                  </td>
-                  <td className="px-4 py-2 border-b text-gray-800">
-                    {new Date(loan.dueDate).toLocaleDateString()}
-                  </td>
-                  <td className="px-4 py-2 border-b text-gray-800">
-                    <button
-                      onClick={() => handleReturn(loan.id)}
-                      className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
-                    >
-                      Tandai Dikembalikan
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
+            ))}
+          </tbody>
+        </table>
+      </div>
       {/* Modal Catatan Admin Pengembalian */}
       {modal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-          <div className="bg-white p-6 rounded-lg shadow-lg min-w-[320px] max-w-sm w-full">
-            <h2 className="text-lg font-bold mb-4 text-gray-900">
-              Catatan Pengembalian
+          <div className="bg-white p-8 rounded-2xl shadow-xl min-w-[320px] max-w-md w-full">
+            <h2 className="text-xl font-bold mb-4 text-blue-900 flex items-center gap-2">
+              <StickyNote size={22} /> Catatan Pengembalian
             </h2>
             <label className="block mb-2 text-gray-800">
               Catatan Admin (opsional)
@@ -167,7 +163,7 @@ export default function ReturnsPage() {
             <textarea
               value={adminNotes}
               onChange={(e) => setAdminNotes(e.target.value)}
-              className="w-full border px-3 py-2 rounded text-gray-800 mb-4"
+              className="w-full border px-3 py-2 rounded-xl text-gray-800 mb-4"
               rows={3}
               placeholder="Tulis catatan pengembalian..."
             />
@@ -177,14 +173,14 @@ export default function ReturnsPage() {
                   setModal(null);
                   setAdminNotes("");
                 }}
-                className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 text-gray-900"
+                className="px-4 py-2 rounded-xl bg-gray-200 hover:bg-gray-300 text-gray-900 font-semibold"
                 disabled={submitting}
               >
                 Batal
               </button>
               <button
                 onClick={handleSubmitReturn}
-                className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
+                className="px-4 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 font-semibold"
                 disabled={submitting}
               >
                 {submitting ? "Menyimpan..." : "Simpan"}
